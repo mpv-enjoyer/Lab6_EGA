@@ -1,144 +1,33 @@
-#include <random>
-#include <vector>
-#include <iostream>
-#include <ctime>
+#include "main.h"
 
-// Входные данные
-const int N = 5; 
-std::vector<std::vector<int>> distance =
-   {{ 0, 5, 8, 5, 3 },                     
-    { 5, 0, 2, 4, 1 },
-    { 8, 2, 0, 6, 7 },
-    { 5, 4, 6, 0, 9 },
-    { 3, 1, 7, 9, 0 }}; // Оптимальное решение для этой задачи коммивояжёра: 5 -> 1 -> 2 -> 4 -> 3 : расстояние 8
-// ...
-
-// Функции для вычисления точного оптимального значения
-void print_optimal();
-void optimal_internal(std::vector<bool> used, std::vector<int> trace, int overall_distance);
-bool is_optimal(int input);
-// ...
-
-// Разное
-std::string to_string(std::vector<int> input);
-int randomnumber(int included_min, int included_max);
-void print_step(int step, std::vector<int> trace, int selected_town, int overall_distance);
-// ...
+//std::vector<int> method(int N, std::vector<std::vector<int>>& distance, int step, int start_from, bool enable_dumb_insert);
 
 int main()
 {
-    std::vector<bool> X = std::vector<bool>(N, false); // Если мы уже входили в город, пишем 1
-    std::vector<int> trace;
-    int overall_distance = 0;
-    int x = randomnumber(0, 4);
-    X[x] = true;
-    trace.push_back(x);
-    std::cout << "1) Trace " << to_string(trace) << " Select " << x << "\n";
-
-    for (int i = 1; i < N; i++) //общий шаг
-    {
-        int current_town = x;
-        std::vector<int> current_min_pairs;
-        for (int j = 0; j < i; j++) //Вычисление минимумов для каждого внутреннего элемента
-        {
-            int current_min_distance = __INT_MAX__;
-            int current_min_town = -1;
-            for (int k = 0; k < N; k++)
-            {
-                if (!X[k] && distance[trace[j]][k] < current_min_distance)
-                {
-                    current_min_distance = distance[trace[j]][k];
-                    current_min_town = k;
-                }
-            }
-            current_min_pairs.push_back(current_min_town);
-        }
-        int current_min_distance_in_pairs = __INT_MAX__;
-        int current_min_to = -1;
-        int current_min_from = -1;
-        for (int j = 0; j < i; j++)
-        {
-            if (distance[trace[j]][current_min_pairs[j]] < current_min_distance_in_pairs)
-            {
-                current_min_from = j;
-                current_min_to = current_min_pairs[j];
-                current_min_distance_in_pairs = distance[trace[j]][current_min_pairs[j]];
-            }
-        }
-        trace.insert(trace.begin() + current_min_from + 1, current_min_to);
-        X[current_min_to] = true;
-        overall_distance += current_min_distance_in_pairs;
-        print_step(i + 1, trace, x, overall_distance);
-    }
-    overall_distance += distance[trace[0]][trace[N-1]];
-
-    std::cout << "Final: Trace " << to_string(trace) << " Distance " << overall_distance << "\n";
-
-    std::cout << "Calculating best possible result:\n";
-    print_optimal();
+    std::vector<std::vector<int>> matrix5 = 
+{{ 0, 24, 29, 19, 16 },
+{ 24, 0, 32, 20, 12 },
+{ 29, 32, 0, 43, 21 },
+{ 19, 20, 43, 0, 23 },
+{ 16, 12, 21, 23, 0 }};
+    std::vector<std::vector<int>> matrix15 = 
+{{ 0, 30, 26, 16, 54, 28, 49, 21, 43, 49, 33, 20, 47, 37, 30 },
+{ 30, 0, 25, 24, 32, 53, 21, 45, 30, 35, 44, 14, 19, 21, 40 },
+{ 26, 25, 0, 34, 31, 35, 45, 47, 17, 58, 19, 12, 31, 44, 52 },
+{ 16, 24, 34, 0, 55, 44, 38, 22, 48, 33, 47, 23, 43, 23, 17 },
+{ 54, 32, 31, 55, 0, 66, 40, 74, 15, 63, 46, 34, 17, 51, 72 },
+{ 28, 53, 35, 44, 66, 0, 74, 39, 51, 78, 23, 39, 66, 65, 55 },
+{ 49, 21, 45, 38, 40, 74, 0, 60, 45, 25, 65, 36, 23, 18, 47 },
+{ 21, 45, 47, 22, 74, 39, 60, 0, 64, 50, 52, 40, 64, 43, 19 },
+{ 43, 30, 17, 48, 15, 51, 45, 64, 0, 65, 30, 25, 24, 51, 66 },
+{ 49, 35, 58, 33, 63, 78, 25, 50, 65, 0, 76, 46, 46, 14, 32 },
+{ 33, 44, 19, 47, 46, 23, 65, 52, 30, 76, 0, 30, 50, 62, 63 },
+{ 20, 14, 12, 23, 34, 39, 36, 40, 25, 46, 30, 0, 28, 32, 41 },
+{ 47, 19, 31, 43, 17, 66, 23, 64, 24, 46, 50, 28, 0, 34, 59 },
+{ 37, 21, 44, 23, 51, 65, 18, 43, 51, 14, 62, 32, 34, 0, 29 },
+{ 30, 40, 52, 17, 72, 55, 47, 19, 66, 32, 63, 41, 59, 29, 0 }};
+method(5, matrix5, 5, randomnumber(0, 4), true);
+method(15, matrix15, 15, randomnumber(0, 14), true);
+int done;
+std::cin >> done;
 }
-
-// Код функций для вычисления точного оптимального значения
-void print_optimal()
-{
-    optimal_internal({ 1, 0, 0, 0, 0}, { 0 }, 0);
-    optimal_internal({ 0, 1, 0, 0, 0}, { 1 }, 0);
-    optimal_internal({ 0, 0, 1, 0, 0}, { 2 }, 0);
-    optimal_internal({ 0, 0, 0, 1, 0}, { 3 }, 0);
-    optimal_internal({ 0, 0, 0, 0, 1}, { 4 }, 0);
-}
-bool is_optimal(int input)
-{
-    static int current_optimal = __INT_MAX__;
-    if (input <= current_optimal) 
-    {
-        current_optimal = input;
-        return true;
-    }
-    return false;
-}
-void optimal_internal(std::vector<bool> used, std::vector<int> trace, int overall_distance)
-{
-    bool is_done = true;
-    for (int i = 0; i < N; i++)
-    {
-        if (used[i]) continue;
-        std::vector<bool> new_used = used;
-        new_used[i].flip();
-        std::vector<int> new_trace = trace;
-        new_trace.push_back(i);
-        is_done = false;
-        optimal_internal(new_used, new_trace, overall_distance + distance[trace[trace.size() - 1]][i]);
-    }
-    if (is_done && is_optimal(overall_distance))
-    {
-        std::cout << to_string(trace) << " " << overall_distance << "\n";
-    }
-}
-// ...
-
-// Разное
-std::string to_string(std::vector<int> input)
-{
-    std::string output = "[ ";
-    for (int i = 0; i < input.size(); i++)
-    {
-        output.append(std::to_string(input[i]) + " ");    
-    }
-    output.append("]");
-    return output;
-}
-int randomnumber(int included_min, int included_max)
-{
-    static std::default_random_engine rng(time(NULL));
-    std::uniform_int_distribution<int> dist(included_min, included_max); 
-    dist(rng);
-    return dist(rng); 
-}
-void print_step(int step, std::vector<int> trace, int selected_town, int overall_distance)
-{
-    std::cout << step << ") Trace " << to_string(trace) << " Select " << selected_town 
-    << " Distance " << distance[trace[trace.size()-2]][trace[trace.size()-1]] << " Overall Distance " << overall_distance << "\n";
-    return;
-}
-// ...
